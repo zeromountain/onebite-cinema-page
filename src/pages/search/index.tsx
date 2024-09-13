@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 
-import SearchableLayout from "@/components/layout/SearchableLayout";
+import SearchableLayout from "@/components/layout/searchable-layout";
 
 export default function SearchPage() {
   const router = useRouter();
