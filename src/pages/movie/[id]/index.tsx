@@ -3,18 +3,6 @@ import { useParams } from "next/navigation";
 import movieData from "@/mock/dummy.json";
 import Image from "next/image";
 
-interface Movie {
-  id: number;
-  title: string;
-  releaseDate: string;
-  company: string;
-  genres: string[];
-  subTitle: string;
-  description: string;
-  runtime: number;
-  posterImgUrl: string;
-}
-
 export default function MoviePage() {
   const params = useParams();
   const movieId = Number(params?.id);
