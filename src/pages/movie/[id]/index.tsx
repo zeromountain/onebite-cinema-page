@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+
 import movieData from "@/mock/dummy.json";
 import Image from "next/image";
 
@@ -17,16 +17,11 @@ interface Movie {
 
 export default function MoviePage() {
   const params = useParams();
-  const [movie, setMovie] = useState<Movie | null>(null);
-
-  useEffect(() => {
-    const movieId = Number(params?.id);
-    const foundMovie = movieData.find((m) => m.id === movieId);
-    setMovie(foundMovie || null);
-  }, [params?.id]);
+  const movieId = Number(params?.id);
+  const movie = movieData.find((m) => m.id === movieId);
 
   if (!movie) {
-    return <p>영화를 찾을 수 없습니다.</p>;
+    return <p className="text-center text-2xl">영화를 찾을 수 없습니다.</p>;
   }
 
   return (
