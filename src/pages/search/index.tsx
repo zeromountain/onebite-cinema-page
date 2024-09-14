@@ -1,22 +1,52 @@
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 
+import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+
+import { getMoviesBySearch } from "@/api/movie";
 import SearchableLayout from "@/components/layout/searchable-layout";
-import dummyData from "@/mock/dummy.json";
 import MovieItem from "@/components/common/movie-item";
+import { Movie } from "@/types";
+
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const queryClient = new QueryClient();
+
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: ["search-movies"],
+      queryFn: () => getMoviesBySearch(context.query.q as string),
+    });
+
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  } catch (e) {
+    return {
+      notFound: true,
+    };
+  } finally {
+    queryClient.clear();
+  }
+};
 
 export default function SearchPage() {
   const router = useRouter();
   const { q } = router.query as { q: string };
 
-  const results = dummyData.filter((movie) =>
-    movie.title.toLowerCase().includes(q.toLowerCase())
-  );
+  const { data } = useQuery<Movie[]>({
+    queryKey: ["search-movies"],
+    queryFn: () => getMoviesBySearch(q),
+  });
 
   return (
     <div className="min-h-screen pt-4">
-      {results.length > 0 ? (
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {results.map((movie) => (
+      {data && data.length > 0 ? (
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {data.map((movie) => (
             <li key={movie.id}>
               <MovieItem movie={movie} w={300} h={400} />
             </li>

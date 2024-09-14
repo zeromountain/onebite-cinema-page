@@ -1,12 +1,54 @@
+import { GetServerSidePropsContext } from "next";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 
-import movieData from "@/mock/dummy.json";
-import Image from "next/image";
+import { getMovieById } from "@/api/movie";
+import {
+  dehydrate,
+  DehydratedState,
+  QueryClient,
+  useQuery,
+} from "@tanstack/react-query";
+import { Movie } from "@/types";
 
-export default function MoviePage() {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const queryClient = new QueryClient();
+
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: ["movie", context.params?.id],
+      queryFn: () => getMovieById(Number(context.params?.id)),
+    });
+
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  } catch (e) {
+    return {
+      notFound: true,
+    };
+  } finally {
+    queryClient.clear();
+  }
+};
+
+export default function MoviePage({
+  dehydratedState,
+}: {
+  dehydratedState: DehydratedState;
+}) {
   const params = useParams();
   const movieId = Number(params?.id);
-  const movie = movieData.find((m) => m.id === movieId);
+
+  const { data: movie } = useQuery<Movie>({
+    queryKey: ["movie", movieId],
+    queryFn: () => getMovieById(movieId),
+    initialData: dehydratedState.queries[0].state.data as Movie,
+  });
 
   if (!movie) {
     return <p className="text-center text-2xl">영화를 찾을 수 없습니다.</p>;
