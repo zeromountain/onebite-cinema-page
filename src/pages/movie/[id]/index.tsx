@@ -71,6 +71,7 @@ export default function MoviePage({
           alt={movie.title}
           width={220}
           height={300}
+          objectFit="cover"
           className="absolute z-10"
         />
       </section>
