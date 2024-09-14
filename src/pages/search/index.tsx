@@ -1,7 +1,12 @@
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import {
+  dehydrate,
+  DehydratedState,
+  QueryClient,
+  useQuery,
+} from "@tanstack/react-query";
 
 import { getMoviesBySearch } from "@/api/movie";
 import SearchableLayout from "@/components/layout/searchable-layout";
@@ -33,13 +38,18 @@ export const getServerSideProps = async (
   }
 };
 
-export default function SearchPage() {
+export default function SearchPage({
+  dehydratedState,
+}: {
+  dehydratedState: DehydratedState;
+}) {
   const router = useRouter();
   const { q } = router.query as { q: string };
 
   const { data } = useQuery<Movie[]>({
     queryKey: ["search-movies"],
     queryFn: () => getMoviesBySearch(q),
+    initialData: dehydratedState.queries[0].state.data as Movie[],
   });
 
   return (
