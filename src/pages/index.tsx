@@ -43,8 +43,6 @@ export default function Home({
 }: {
   dehydratedState: DehydratedState;
 }) {
-  console.log("home page", { dehydratedState });
-
   const { data: movies } = useQuery<Movie[]>({
     queryKey: ["movies"],
     queryFn: getMovies,
