@@ -4,9 +4,9 @@ import Footer from "../common/footer";
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <div className="container mx-auto py-4 px-5">
+    <div className="max-w-[800px] mx-auto py-4 px-5">
       <Header />
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );

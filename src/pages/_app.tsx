@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 
-import RootLayout from "@/components/layout/RootLayout";
+import RootLayout from "@/components/layout/root-layout";
 
 import "@/styles/globals.css";
 
