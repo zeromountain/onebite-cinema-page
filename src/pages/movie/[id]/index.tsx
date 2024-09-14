@@ -55,7 +55,7 @@ export default function MoviePage({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col min-h-screen gap-4">
       {/* 이미지 포스터 영역 */}
       <section
         style={{
