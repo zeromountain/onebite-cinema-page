@@ -36,7 +36,7 @@ export default function SearchForm() {
         type="text"
         name="search"
         defaultValue={q}
-        placeholder="영화 제목을 입력해 주세요.."
+        placeholder="검색어를 입력해 주세요 😀"
         className="flex-1 p-2 rounded-md border-2 border-gray-300 bg-transparent outline-none focus:border-blue-500"
       />
       <button

@@ -14,9 +14,9 @@ export default function MovieItem({ movie, w, h }: MovieItemProps) {
       <Image
         src={movie.posterImgUrl}
         alt={movie.title}
-        objectFit="cover"
         width={w}
         height={h}
+        objectFit="cover"
         className="rounded mb-2 hover:scale-105 transition-all duration-300 cursor-pointer"
       />
     </Link>
