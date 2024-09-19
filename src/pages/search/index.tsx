@@ -1,55 +1,20 @@
-import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 
-import {
-  dehydrate,
-  DehydratedState,
-  QueryClient,
-  useQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { getMoviesBySearch } from "@/api/movie";
 import SearchableLayout from "@/components/layout/searchable-layout";
 import MovieItem from "@/components/common/movie-item";
 import { Movie } from "@/types";
+import { QUERY_KEY } from "@/constant/query-key";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  const queryClient = new QueryClient();
-
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: ["search-movies"],
-      queryFn: () => getMoviesBySearch(context.query.q as string),
-    });
-
-    return {
-      props: {
-        dehydratedState: dehydrate(queryClient),
-      },
-    };
-  } catch (e) {
-    return {
-      notFound: true,
-    };
-  } finally {
-    queryClient.clear();
-  }
-};
-
-export default function SearchPage({
-  dehydratedState,
-}: {
-  dehydratedState: DehydratedState;
-}) {
+export default function SearchPage() {
   const router = useRouter();
   const { q } = router.query as { q: string };
 
   const { data } = useQuery<Movie[]>({
-    queryKey: ["search-movies"],
+    queryKey: QUERY_KEY.SEARCH_MOVIE_RETRIEVE(q),
     queryFn: () => getMoviesBySearch(q),
-    initialData: dehydratedState.queries[0].state.data as Movie[],
   });
 
   return (
