@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="sticky top-0 h-20 flex items-center z-20 bg-black">
+    <header className="h-20 flex items-center bg-transparent">
       <Link href="/">
         <h1 className="text-2xl font-bold text-red-500">🎥 ONEBITE CINEMA</h1>
       </Link>
