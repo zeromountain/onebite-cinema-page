@@ -14,10 +14,10 @@ export default function MovieItem({ movie, w, h }: MovieItemProps) {
       <Image
         src={movie.posterImgUrl}
         alt={movie.title}
+        sizes="100vw"
         width={w}
         height={h}
-        objectFit="cover"
-        className="rounded mb-2 hover:scale-105 transition-all duration-300 cursor-pointer"
+        className="w-full h-auto rounded mb-2 hover:scale-105 transition-all duration-300 cursor-pointer"
       />
     </Link>
   );
