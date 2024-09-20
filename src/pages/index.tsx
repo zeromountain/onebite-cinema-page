@@ -70,7 +70,7 @@ export default function Home({
       </section>
       <section className="mb-8 w-full ">
         <h2 className="text-2xl font-bold mb-4">등록된 모든 영화</h2>
-        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 grid">
+        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
           {movies.map((movie) => (
             <li key={`all-${movie.id}`}>
               <MovieItem movie={movie} w={140} h={200} />
