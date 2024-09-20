@@ -9,9 +9,7 @@ const nextConfig = {
       },
     ],
   },
-  compiler: {
-    removeConsole: true,
-  },
+  compiler: {},
 };
 
 export default nextConfig;
