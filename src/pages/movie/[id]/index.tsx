@@ -1,4 +1,9 @@
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
+import {
+  GetStaticPaths,
+  GetStaticProps,
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
+} from "next";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 
@@ -9,14 +14,14 @@ import { useRouter } from "next/router";
 import { QUERY_KEY } from "@/constant/query-key";
 import Head from "next/head";
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = (async () => {
   const movies: Movie[] = await getMovies();
   const paths = movies.map((movie) => ({ params: { id: String(movie.id) } }));
 
   return { paths, fallback: "blocking" };
-};
+}) satisfies GetStaticPaths;
 
-export const getStaticProps = async (context: GetStaticPropsContext) => {
+export const getStaticProps = (async (context: GetStaticPropsContext) => {
   const queryClient = new QueryClient();
 
   try {
@@ -37,7 +42,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   } finally {
     queryClient.clear();
   }
-};
+}) satisfies GetStaticProps;
 
 export default function MoviePage({
   dehydratedState,
@@ -47,17 +52,13 @@ export default function MoviePage({
   const params = useParams();
   const movieId = Number(params?.id);
 
-  const {
-    data: movie,
-    isLoading,
-    isFetching,
-  } = useQuery<Movie>({
+  const dehydratedMovie = dehydratedState?.queries[0].state.data as Movie;
+
+  const { data: movie } = useQuery<Movie>({
     queryKey: ["movie", movieId],
     queryFn: () => getMovieById(movieId),
-    initialData: dehydratedState.queries[0].state.data as Movie,
+    initialData: dehydratedMovie,
   });
-
-  console.log("프리패칭된 데이터 가져오는지 확인", { isLoading, isFetching });
 
   if (router.isFallback) {
     return (
@@ -93,11 +94,8 @@ export default function MoviePage({
         <section
           style={{
             backgroundImage: `url(${movie.posterImgUrl})`,
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
           }}
-          className="flex h-[400px] justify-center items-center relative before:content-[''] before:absolute before:top-0 before:left-0 before:bg-black before:opacity-50 before:w-full before:h-full"
+          className="flex h-[400px] justify-center items-center relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:top-0 before:left-0 before:bg-black before:opacity-50 before:w-full before:h-full"
         >
           <Image
             src={movie.posterImgUrl}
@@ -105,7 +103,7 @@ export default function MoviePage({
             width={220}
             height={300}
             objectFit="cover"
-            className="absolute z-10"
+            className="relative z-10"
           />
         </section>
         {/* 영화 정보 영역 */}

@@ -1,3 +1,7 @@
+import { GetStaticProps } from "next";
+
+import Head from "next/head";
+
 import {
   dehydrate,
   DehydratedState,
@@ -7,12 +11,11 @@ import {
 
 import { getMovies, getRandomMovies } from "@/api/movie";
 import SearchableLayout from "@/components/layout/searchable-layout";
+import { QUERY_KEY } from "@/constant/query-key";
 import MovieItem from "@/components/common/movie-item";
 import { Movie } from "@/types";
-import { QUERY_KEY } from "@/constant/query-key";
-import Head from "next/head";
 
-export const getStaticProps = async () => {
+export const getStaticProps = (async () => {
   const queryClient = new QueryClient();
 
   try {
@@ -39,7 +42,7 @@ export const getStaticProps = async () => {
   } finally {
     queryClient.clear();
   }
-};
+}) satisfies GetStaticProps;
 
 export default function Home({
   dehydratedState,
