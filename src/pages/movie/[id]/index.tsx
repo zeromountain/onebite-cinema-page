@@ -1,24 +1,26 @@
-import { GetServerSidePropsContext } from "next";
+import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 
-import { getMovieById } from "@/api/movie";
-import {
-  dehydrate,
-  DehydratedState,
-  QueryClient,
-  useQuery,
-} from "@tanstack/react-query";
+import { getMovieById, getMovies } from "@/api/movie";
+import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import { Movie } from "@/types";
+import { useRouter } from "next/router";
+import { QUERY_KEY } from "@/constant/query-key";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export const getStaticPaths = async () => {
+  const movies: Movie[] = await getMovies();
+  const paths = movies.map((movie) => ({ params: { id: String(movie.id) } }));
+
+  return { paths, fallback: "blocking" };
+};
+
+export const getStaticProps = async (context: GetStaticPropsContext) => {
   const queryClient = new QueryClient();
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: ["movie", context.params?.id],
+      queryKey: QUERY_KEY.MOVIE_RETRIEVE(String(context.params?.id)),
       queryFn: () => getMovieById(Number(context.params?.id)),
     });
 
@@ -38,17 +40,27 @@ export const getServerSideProps = async (
 
 export default function MoviePage({
   dehydratedState,
-}: {
-  dehydratedState: DehydratedState;
-}) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter();
+
   const params = useParams();
   const movieId = Number(params?.id);
 
-  const { data: movie } = useQuery<Movie>({
+  const {
+    data: movie,
+    isLoading,
+    isFetching,
+  } = useQuery<Movie>({
     queryKey: ["movie", movieId],
     queryFn: () => getMovieById(movieId),
     initialData: dehydratedState.queries[0].state.data as Movie,
   });
+
+  console.log("프리패칭된 데이터 가져오는지 확인", { isLoading, isFetching });
+
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
 
   if (!movie) {
     return <p className="text-center text-2xl">영화를 찾을 수 없습니다.</p>;

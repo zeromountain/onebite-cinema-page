@@ -9,18 +9,19 @@ import { getMovies, getRandomMovies } from "@/api/movie";
 import SearchableLayout from "@/components/layout/searchable-layout";
 import MovieItem from "@/components/common/movie-item";
 import { Movie } from "@/types";
+import { QUERY_KEY } from "@/constant/query-key";
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const queryClient = new QueryClient();
 
   try {
     await Promise.allSettled([
       queryClient.prefetchQuery({
-        queryKey: ["movies"],
+        queryKey: QUERY_KEY.MOVIE_LIST_RETRIEVE,
         queryFn: getMovies,
       }),
       queryClient.prefetchQuery({
-        queryKey: ["randomMovies"],
+        queryKey: QUERY_KEY.RANDOM_MOVIE_RETRIEVE,
         queryFn: getRandomMovies,
       }),
     ]);
@@ -44,13 +45,13 @@ export default function Home({
   dehydratedState: DehydratedState;
 }) {
   const { data: movies } = useQuery<Movie[]>({
-    queryKey: ["movies"],
+    queryKey: QUERY_KEY.MOVIE_LIST_RETRIEVE,
     queryFn: getMovies,
     initialData: dehydratedState.queries[0].state.data as Movie[],
   });
 
   const { data: randomMovies } = useQuery<Movie[]>({
-    queryKey: ["randomMovies"],
+    queryKey: QUERY_KEY.RANDOM_MOVIE_RETRIEVE,
     queryFn: getRandomMovies,
     initialData: dehydratedState.queries[1].state.data as Movie[],
   });
